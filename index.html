@@ -2,101 +2,141 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel da Profissional</title>
+  <title>Painel do Profissional</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    :root {
+      --rosa-claro: #fce4ec;
+      --rosa-principal: #ec407a;
+      --rosa-escuro: #c2185b;
+      --branco: #ffffff;
+      --cinza-claro: #f9f9f9;
+      --cinza: #e0e0e0;
+      --verde: #4CAF50;
+      --verde-wpp: #25D366;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      max-width: 1000px;
-      margin: 20px auto;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--rosa-claro);
+      margin: 0;
       padding: 20px;
-      background-color: #fff0f5;
-      color: #333;
     }
 
     h2 {
       text-align: center;
-      color: #a64ac9;
-      margin-bottom: 30px;
+      color: var(--rosa-escuro);
+      margin-bottom: 20px;
     }
 
-    .tabela-container {
-      overflow-x: auto;
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: var(--branco);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .botao-atualizar {
+      display: block;
+      margin: 0 auto 20px auto;
+      background-color: var(--rosa-principal);
+      color: var(--branco);
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .botao-atualizar:hover {
+      background-color: var(--rosa-escuro);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
+      font-size: 14px;
     }
 
     th, td {
-      padding: 12px 14px;
-      border: 1px solid #f1ccec;
+      border: 1px solid var(--cinza);
+      padding: 12px;
       text-align: left;
     }
 
     th {
-      background-color: #d291bc;
-      color: white;
+      background-color: var(--rosa-principal);
+      color: var(--branco);
     }
 
     tr:nth-child(even) {
-      background-color: #fdf1f8;
-    }
-
-    .btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+      background-color: var(--cinza-claro);
     }
 
     .btns a {
-      text-decoration: none;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 14px;
       display: inline-block;
+      text-decoration: none;
+      margin: 2px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      white-space: nowrap;
     }
 
     .btn-call {
-      background-color: #ff69b4;
+      background-color: var(--verde);
       color: white;
     }
 
     .btn-whatsapp {
-      background-color: #25D366;
+      background-color: var(--verde-wpp);
       color: white;
     }
 
-    @media (max-width: 600px) {
-      body {
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 20px;
+        background: var(--branco);
+        border-radius: 8px;
         padding: 10px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.05);
       }
 
-      h2 {
-        font-size: 20px;
+      td {
+        border: none;
+        padding: 8px 0;
       }
 
-      th, td {
-        font-size: 14px;
-        padding: 10px;
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: var(--rosa-escuro);
+        display: block;
       }
 
-      .btns a {
-        font-size: 13px;
-        padding: 5px 8px;
+      .btns {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
       }
     }
   </style>
 </head>
 <body>
-
-  <h2>Agenda de clientes</h2>
-
-  <div class="tabela-container">
+  <div class="container">
+    <h2>Agenda do Profissional</h2>
+    <button class="botao-atualizar" onclick="carregarDados()">🔄 Atualizar</button>
     <table>
       <thead>
         <tr>
@@ -123,24 +163,36 @@
         const corpo = document.getElementById('dados');
         corpo.innerHTML = '';
 
+        const formatDateToSortable = (dataStr, horaStr) => {
+          const [dia, mes, ano] = dataStr.split('/');
+          return new Date(`${ano}-${mes}-${dia}T${horaStr}:00`);
+        };
+
+        dados.sort((a, b) => {
+          const dataA = formatDateToSortable(a.data, a.hora);
+          const dataB = formatDateToSortable(b.data, b.hora);
+          return dataA - dataB;
+        });
+
         dados.forEach(item => {
           const nome = item.nome || '';
           const telefone = item.telefone || '';
           const data = item.data || '';
           const hora = item.hora || '';
-          const obs = item.observacao || item.observação || '';
+          const obs = item.observacao || item.observações || '';
+
           const telefoneLimpo = telefone.replace(/[^0-9]/g, '');
 
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${nome}</td>
-            <td>${telefone}</td>
-            <td>${data}</td>
-            <td>${hora}</td>
-            <td>${obs}</td>
-            <td class="btns">
-              <a class="btn-call" href="tel:${telefoneLimpo}">📞 Ligar</a>
-              <a class="btn-whatsapp" href="https://wa.me/55${telefoneLimpo}" target="_blank">💬 WhatsApp</a>
+            <td data-label="Nome">${nome}</td>
+            <td data-label="Telefone">${telefone}</td>
+            <td data-label="Data">${data}</td>
+            <td data-label="Hora">${hora}</td>
+            <td data-label="Observação">${obs}</td>
+            <td data-label="Ações" class="btns">
+              <a class="btn-call" href="tel:${telefoneLimpo}">Ligar</a>
+              <a class="btn-whatsapp" href="https://wa.me/55${telefoneLimpo}" target="_blank">WhatsApp</a>
             </td>
           `;
           corpo.appendChild(tr);
@@ -153,6 +205,5 @@
 
     carregarDados();
   </script>
-
 </body>
 </html>
