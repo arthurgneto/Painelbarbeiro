@@ -65,12 +65,12 @@
       border: 1px solid var(--cinza);
       padding: 12px;
       text-align: left;
+      vertical-align: middle;
     }
 
     th {
       background-color: var(--rosa-principal);
       color: var(--branco);
-            
     }
 
     tr:nth-child(even) {
@@ -97,10 +97,17 @@
       color: white;
     }
 
+    .comprovante-link {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 13px;
+      color: var(--rosa-principal);
+      text-decoration: underline;
+    }
+
     @media (max-width: 768px) {
       table, thead, tbody, th, td, tr {
         display: block;
-        
       }
 
       thead {
@@ -113,7 +120,6 @@
         border-radius: 8px;
         padding: 10px;
         box-shadow: 0 0 5px rgba(0,0,0,0.05);
-        
       }
 
       td {
@@ -182,9 +188,15 @@
           const telefone = item.telefone || '';
           const data = item.data || '';
           const hora = item.hora || '';
-          const obs = item.observacao || item.observações || '';
+          const obs = item.observacao || '';
+          const comprovante = item.comprovante || '';
 
           const telefoneLimpo = telefone.replace(/[^0-9]/g, '');
+
+          // Cria o link do comprovante se existir
+          const linkComprovante = comprovante
+            ? `<a href="${comprovante}" target="_blank" class="comprovante-link" title="Ver comprovante">Ver Comprovante</a>`
+            : '';
 
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -192,7 +204,7 @@
             <td data-label="Telefone">${telefone}</td>
             <td data-label="Data">${data}</td>
             <td data-label="Hora">${hora}</td>
-            <td data-label="Observação">${obs}</td>
+            <td data-label="Observação">${obs} ${linkComprovante}</td>
             <td data-label="Ações" class="btns">
               <a class="btn-call" href="tel:${telefoneLimpo}">Ligar</a>
               <a class="btn-whatsapp" href="https://wa.me/55${telefoneLimpo}" target="_blank">WhatsApp</a>
